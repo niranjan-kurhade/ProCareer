@@ -1,5 +1,4 @@
 import React from 'react';
-import ResumeList from '../components/ResumeList';
 import { Link } from 'react-router-dom';
 
 const resumes = [
@@ -12,7 +11,6 @@ const ResumeBuilder = () => {
     return (
         <div>
             <h2>Build your Resume</h2>
-            <ResumeList resumes={resumes} />
 
             <Link to="/resume-builder/choose-template">
                 <button>Create Resume</button>

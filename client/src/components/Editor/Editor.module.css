@@ -1,11 +1,10 @@
 .container {
-  min-width: 550px;
+  min-width: 1050px;
   min-height: 450px;
-  max-width: 750px;
+  max-width: 1750px;
   display: flex;
   flex-direction: column;
   gap: 30px;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
   padding-top: 5px;
   height: fit-content;
   margin: 0 auto;
@@ -59,12 +58,14 @@
   display: flex;
   gap: 20px;
 }
+
 .detail .column {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.detail .row > div {
+
+.detail .row>div {
   flex: 1;
 }
 
@@ -97,6 +98,7 @@
   line-height: 1.25rem;
   color: #fff;
 }
+
 .chip svg {
   color: #fff;
   height: 18px;

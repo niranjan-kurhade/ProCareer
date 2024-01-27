@@ -11,15 +11,14 @@ import ChatBot from './pages/ChatBot';
 const App = () => {
   return (
     <div>
-        <Routes>
-          <Route path='/' element={<LandingPage />} />
-          <Route path='/resume-builder' element={<ResumeBuilder />} />
-          <Route path='/resume-builder/choose-template' element={<ChooseTemplate />} />
-          <Route path='/resume-builder/edit-details' element={<EditDetails />} />
-          <Route path='/resume-score' element={<ResumeScore />} />
-          <Route path='/prepare' element={<Prepare />} />
-          <Route path = '/chat' element = {<ChatBot />} />
-        </Routes>
+      <Routes>
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/resume-builder/choose-template' element={<ChooseTemplate />} />
+        <Route path='/resume-builder/edit-details' element={<EditDetails />} />
+        <Route path='/resume-score' element={<ResumeScore />} />
+        <Route path='/prepare' element={<Prepare />} />
+        <Route path='/chat' element={<ChatBot />} />
+      </Routes>
     </div>
   )
 }
