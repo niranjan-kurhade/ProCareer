@@ -7,6 +7,7 @@ import Prepare from './pages/Prepare'
 import ChooseTemplate from './components/ChooseTemplate';
 import EditDetails from './pages/EditDetails';
 import ChatBot from './pages/ChatBot';
+import Feedback from './pages/Feedback';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path='/resume-score' element={<ResumeScore />} />
           <Route path='/prepare' element={<Prepare />} />
           <Route path = '/chat' element = {<ChatBot />} />
+          <Route path = '/feedback' element = {< Feedback />} />
         </Routes>
     </div>
   )

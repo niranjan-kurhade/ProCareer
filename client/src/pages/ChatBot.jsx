@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/ChatBot.css";
 
 function ChatBot() {
   const location = useLocation();
   const imageName = location.state.imageName;
-
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showEvaluation, setShowEvaluation] = useState(false);
-
+  const [userAnswers, setUserAnswers] = useState([]);
+  console.log(userAnswers)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,6 +64,7 @@ function ChatBot() {
     if (inputMessage.trim() !== "") {
       const newMessages = [...messages, { text: inputMessage, sender: "user" }];
       setMessages(newMessages);
+      setUserAnswers((prevAnswers) => [...prevAnswers, inputMessage]);
       setInputMessage("");
       handleNextQuestion();
     }
@@ -73,6 +76,21 @@ function ChatBot() {
     } else {
       console.log("No more questions");
       setShowEvaluation(true);
+        try {
+          axios.post("http://localhost:3001/evaluate", {
+            questions,userAnswers,imageName
+          }).then((res) => {
+            //console.log(res.data.feedback)
+            let feedback = res.data.feedback
+            console.log(res.status)
+            if(res.status === 200){
+              console.log("Idhar ara h")
+              navigate('/feedback' , {state : {feedback}});
+            }
+          });
+        } catch (e) {
+          console.log(e);
+        }
     }
   };
 
