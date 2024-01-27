@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI("AIzaSyAsrtT_-aDjGeQ9lRkV9I2hMlNyHxFFEcA");
+const genAI = new GoogleGenerativeAI("");
 const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" })
 
@@ -72,7 +72,7 @@ app.post('/extract', async (req, res) => {
         history : [
           {
             role : "user",
-            parts : `You act as an interviewer at company **XYZ** based on the resume of client ${resumeInfo} ask 10 question from it.`
+            parts : `You act as an interviewer at company **XYZ** based on the resume of client ${resumeInfo} ask 5 question from it.`
           }, {
             role : 'model',
             parts : "Nice to meet you candidate."
@@ -98,6 +98,45 @@ app.post('/extract', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+app.post('/evaluate', async (req, res) => {
+  let questions = req.body.questions
+  let answer = req.body.userAnswers
+  let resume = req.body.imageName
+  console.log(questions, answer, resume)
+  console.log("EVALUATING!")
+  try {
+    const imageName = req.body.imageName;
+    const imagePath = path.join(__dirname, uploadDirectory, imageName);
+    console.log(imagePath);
+    var prompt = "Extract information from the resume.";
+    const image = {
+    inlineData: {
+        data: Buffer.from(fs.readFileSync(imagePath)).toString("base64"),
+        mimeType: "image/png",
+    },
+    };
+  
+    const result = await imagemodel.generateContent([prompt, image]);
+    var resumeInfo = result.response.text()
+    //console.log(resumeInfo)
+    var prompt = `based on ${resumeInfo} and ${questions} Generate Model Answers of 2-3 lines. The number of answers should match the number of question. Return the answers in const array modelanswer`
+    const modelAns = await model.generateContent([prompt]);
+    var modelans = modelAns.response.text()
+
+    var stringans = answer.toString()
+    var prompt = `The questions are ${questions.toString()} the Model answer to it are ${modelans}, the answer given by the candidate is ${stringans}. Compare the model answer with the candidate answer and provide feedback for each question assign it a score out of 5. In the end give feedback as hire not hire.`
+    var feedback = await model.generateContent([prompt])
+    var finalfeedback = feedback.response.text()
+    console.log(finalfeedback)
+    console.log(modelans)
+    res.status(200).json({ feedback: finalfeedback });
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
