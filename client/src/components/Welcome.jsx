@@ -8,7 +8,7 @@ const Welcome = () => {
                 <div className="welcome-text">
                     Welcome to ProCareer !
                 </div>
-                <p>Discover the best tools for creating stunning resumes.</p>
+                <p className='text-s'>Discover the best tools for creating stunning resumes.</p>
 
                 <div className="button-container">
                     <button className="primary-button">Learn More</button>

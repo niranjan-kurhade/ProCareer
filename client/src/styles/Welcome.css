@@ -30,10 +30,12 @@
     padding: 10px;
   } */
 
-
+.text-s {
+    font-size: 2rem;
+}
 
 .welcome-text {
-    font-size: 2.9em;
+    font-size: 3.5rem;
     margin-top: -80px;
     margin-bottom: 50px;
 }
@@ -73,7 +75,7 @@
 }
 
 .hero-image {
-    max-width: 90%;
+    max-width: 70%;
     height: auto;
 }
 
