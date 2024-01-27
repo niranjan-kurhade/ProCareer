@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI("");
+const genAI = new GoogleGenerativeAI("AIzaSyAsrtT_-aDjGeQ9lRkV9I2hMlNyHxFFEcA");
 const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" })
 
@@ -51,6 +51,38 @@ app.post('/test', upload.single('image'), (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+app.post('/resumescore', upload.single('image'), async (req, res) => {
+  console.log("Calculating Your Score!")
+  try {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const imageName = req.file.originalname;
+    const imagePath = path.join(__dirname, uploadDirectory, imageName);
+    console.log(imagePath);
+    var prompt = "Extract information from the resume";
+    const image = {
+      inlineData : {
+        data : Buffer.from(fs.readFileSync(imagePath)).toString("base64"),
+        mimeType : "image/png",
+      },
+    };
+    const result = await imagemodel.generateContent([prompt, image]);
+    var resumeInfo = result.response.text();
+
+    var prompt = `Based on the resume ${resumeInfo} find the flaws in first person and list them, grade the resume out of 100. Don't write in bold`
+    const feedback = await model.generateContent([prompt]);
+    var finalfeedback = feedback.response.text();
+    console.log(finalfeedback)
+    res.status(200).json({feedback : finalfeedback})
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+})
+
 
 app.post('/extract', async (req, res) => {
   try {
