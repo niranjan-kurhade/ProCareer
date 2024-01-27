@@ -1,23 +1,194 @@
-const mongoose = require("mongoose");
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const mongoose = require('mongoose');
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const dotenv = require('dotenv')
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI("AIzaSyAsrtT_-aDjGeQ9lRkV9I2hMlNyHxFFEcA");
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+const genAI = new GoogleGenerativeAI(process.env.GULGUL_API);
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" })
 
 const app = express();
 const PORT = 3001;
+dotenv.config()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const uploadDirectory = "uploads";
+mongoose.connect(process.env.MONGO_URI, {
+}, ) 
+.then(() => console.log("Connected to database"))
+.catch((err) => {console.log(err)})
+
+const registerschema = new mongoose.Schema({
+  email : {
+      type : String
+  } , 
+  registered : {
+      type : Boolean
+  }
+})
+
+module.exports = Register = mongoose.model('Register', registerschema)
+
+
+const basicInfoSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  linkedin: {
+    type: String,
+    required: true
+  },
+  github: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  phone: {
+    type: String,
+    required: true
+  }
+});
+
+// Create a model using the schema
+const BasicInfo = mongoose.model('BasicInfo', basicInfoSchema);
+
+// Export the model
+module.exports = BasicInfo;
+
+
+const workSchema = new mongoose.Schema({
+  certificationLink: {
+    type: String,
+    required: true,
+  },
+  companyName: {
+    type: String,
+    required: true,
+  },
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  points: {
+    type: [String],
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+});
+
+const Certification = mongoose.model('Certification', workSchema);
+
+module.exports = Certification;
+
+const projectSchema = new mongoose.Schema({
+  github: {
+    type: String,
+    required: true,
+  },
+  link: {
+    type: String,
+    required: true,
+  },
+  overview: {
+    type: String,
+    required: true,
+  },
+  points: {
+    type: [String],
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+});
+
+const Project = mongoose.model('Project', projectSchema);
+
+module.exports = Project;
+
+const educationSchema = new mongoose.Schema({
+  college: {
+    type: String,
+    required: true,
+  },
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+});
+
+const Education = mongoose.model('Education', educationSchema);
+
+module.exports = Education;
+
+
+const achievementsSchema = new mongoose.Schema({
+  points: {
+    type: [String],
+    required: true,
+  },
+});
+
+const Achievements = mongoose.model('Achievements', achievementsSchema);
+
+module.exports = Achievements;
+
+const uploadDirectory = 'uploads';
+
+const summarySchema = new mongoose.Schema({
+  summary : {
+    type : String,
+    required : true,
+  }
+})
+
+const Summary = mongoose.model('Summary', summarySchema);
+
+module.exports = Summary
+
+const otherSchema = new mongoose.Schema({
+  other : {
+    type : String, 
+    required : true,
+  }
+})
+
+const Other = mongoose.model('Other', otherSchema);
+module.exports = Other
 
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
@@ -34,7 +205,154 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/test", upload.single("image"), (req, res) => {
+
+app.post('/add/basicInfo', async (req, res) => {
+  try {
+    const { name, title, linkedin, github, email, phone } = req.body.params;
+
+    const newBasicInfo = new BasicInfo({
+      name,
+      title,
+      linkedin,
+      github,
+      email,
+      phone,
+    });
+
+    const savedBasicInfo = await newBasicInfo.save();
+
+    res.json({ success: true, data: savedBasicInfo });
+  } catch (error) {
+    console.error(error);
+    res.stat
+  }
+})
+
+
+app.post('/add/workInfo', async (req, res) => {
+  try{
+    console.log(req.body.params)
+    const {certificationLink, title, startDate, endDate, companyName, location, points} = req.body.params;
+    const newWorkInfo = new Certification({
+      certificationLink,
+      title,
+      startDate,
+      endDate,
+      companyName,
+      location,
+      points
+    });
+
+    const savedWorkInfo = await newWorkInfo.save()
+    res.json({success : true, data: savedWorkInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+
+app.post('/add/projectInfo', async (req, res) => {
+  try{
+    console.log(req.body.params);
+    const {link, title, overview, github, points} = req.body.params;
+    const newProjectInfo = new Project({
+      link,
+      title,
+      overview,
+      github,
+      points
+    });
+    const savedProjectInfo = await newProjectInfo.save()
+    res.json({success : true, data : savedProjectInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+app.post('/add/eduInfo', async (req, res) => {
+  try{
+    console.log(req.body.params);
+    const {title, college, startDate, endDate } = req.body.params; 
+    const newEduInfo = new Education({
+      title,
+      college,
+      startDate,
+      endDate
+    });
+    const savedEduInfo = await newEduInfo.save();
+    res.json({success : true, data : savedEduInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+
+app.post('/add/achInfo', async (req, res) => {
+  try{
+    console.log(req.body.params);
+    const {points} = req.body.params;
+    const newAchInfo = new Achievements({
+      points
+    });
+    const savedAchInfo = await newAchInfo.save();
+    res.json({success : true, data : savedAchInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+
+})
+
+app.post('/add/sumInfo', async (req, res) => {
+  try{
+    console.log(req.body.params);
+    const {sum} = req.body.params;
+    const newSumInfo = new Summary({
+      sum
+    })
+    const savedSumInfo = await newSumInfo.save();
+    res.json({success : true, data : savedSumInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+
+app.post('/add/otherInfo', async (req, res) => {
+  try{
+    console.log(req.body.params)
+    const {other} = req.body.params;
+    const newOtherInfo = new Other({
+      other
+    })
+    const savedOtherInfo = await newOtherInfo.save();
+    res.json({success : true, data : savedSumInfo})
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+
+app.post('/check', (req, res) => {
+  const email = req.body.params.email;
+  Register.findOne({email : email})
+  .then((data) => {
+    if(!data){
+      console.log("Does not Exist");
+    }
+    else{
+      console.log('Exist');
+    }
+  })
+})
+
+
+app.post('/test', upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send("No file uploaded.");
