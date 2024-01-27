@@ -1,10 +1,6 @@
-.prepare-container {
-    padding: 20px;
-}
-
 .prepare-heading {
     font-size: 24px;
-    margin-bottom: 20px;
+    margin: 2rem;
 }
 
 .sections-container {
@@ -13,11 +9,10 @@
     /* Two columns with equal width */
     gap: 20px;
     /* Gap between sections */
+    margin-left: 4rem;
 }
 
-
 .upload-section {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+    flex: 1;
+    /* Each section occupies equal space */
 }

@@ -76,27 +76,27 @@ function ChatBot() {
     } else {
       console.log("No more questions");
       setShowEvaluation(true);
-        try {
-          axios.post("http://localhost:3001/evaluate", {
-            questions,userAnswers,imageName
-          }).then((res) => {
-            //console.log(res.data.feedback)
-            let feedback = res.data.feedback
-            console.log(res.status)
-            if(res.status === 200){
-              console.log("Idhar ara h")
-              navigate('/feedback' , {state : {feedback}});
-            }
-          });
-        } catch (e) {
-          console.log(e);
-        }
+      try {
+        axios.post("http://localhost:3001/evaluate", {
+          questions, userAnswers, imageName
+        }).then((res) => {
+          //console.log(res.data.feedback)
+          let feedback = res.data.feedback
+          console.log(res.status)
+          if (res.status === 200) {
+            console.log("Idhar ara h")
+            navigate('/feedback', { state: { feedback } });
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
   return (
     <div className="chatbot-container">
-      <h1 className="chatbot-title">ChatBot Component</h1>
+      <h1 className="chatbot-title">ChatBot</h1>
       <p className="image-name">Received Image Name: {imageName}</p>
       {showEvaluation ? <p>Evaluating</p> : <p></p>}
 
@@ -104,9 +104,8 @@ function ChatBot() {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message ${
-              message.sender === "bot" ? "bot-message" : "user-message"
-            }`}
+            className={`message ${message.sender === "bot" ? "bot-message" : "user-message"
+              }`}
           >
             <span className="message-sender">
               {message.sender === "bot" ? "Bot:" : "You:"}
