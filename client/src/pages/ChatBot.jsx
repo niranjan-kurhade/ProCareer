@@ -15,7 +15,7 @@ function ChatBot() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
-  console.log(userAnswers)
+  console.log(userAnswers);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,10 +56,6 @@ function ChatBot() {
     }
   }, [loading, questions, currentQuestionIndex]);
 
-  useEffect(() => {
-    console.log("showEvaluation:", showEvaluation);
-  }, [showEvaluation]);
-
   const handleSendMessage = () => {
     if (inputMessage.trim() !== "") {
       const newMessages = [...messages, { text: inputMessage, sender: "user" }];
@@ -78,14 +74,15 @@ function ChatBot() {
       setShowEvaluation(true);
       try {
         axios.post("http://localhost:3001/evaluate", {
-          questions, userAnswers, imageName
+          questions,
+          userAnswers,
+          imageName,
         }).then((res) => {
-          //console.log(res.data.feedback)
-          let feedback = res.data.feedback
-          console.log(res.status)
+          let feedback = res.data.feedback;
+          console.log(res.status);
           if (res.status === 200) {
-            console.log("Idhar ara h")
-            navigate('/feedback', { state: { feedback } });
+            console.log("Redirecting...");
+            navigate("/feedback", { state: { feedback } });
           }
         });
       } catch (e) {
@@ -97,52 +94,43 @@ function ChatBot() {
   return (
     <div className="chatbot-container">
       <h1 className="chatbot-title">ChatBot</h1>
-      <p className="image-name">Received Image Name: {imageName}</p>
-      {showEvaluation ? <p>Evaluating</p> : <p></p>}
-
-      <div className="chat-messages">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.sender === "bot" ? "bot-message" : "user-message"
-              }`}
-          >
-            <span className="message-sender">
-              {message.sender === "bot" ? "Bot:" : "You:"}
-            </span>{" "}
-            {message.text}
-          </div>
-        ))}
-      </div>
-
       {loading ? (
-        <p>Loading questions...</p>
-      ) : currentQuestionIndex < questions.length ? (
-        <div className="input-container">
-          <input
-            type="text"
-            placeholder="Type your answer..."
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            className="message-input"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="send-button"
-            disabled={showEvaluation}
-          >
-            Send
-          </button>
-        </div>
+        <div className="loading-animation">Loading...</div>
+      ) : showEvaluation ? (
+        <p>Evaluating...</p>
       ) : (
         <div>
-          {showEvaluation && (
-            <div>
-              <p>Evaluation paragraph after 10 questions...</p>
-              <p>Additional content for evaluation...</p>
-            </div>
-          )}
-          {!showEvaluation && <p>No more questions</p>}
+          <div className="chat-messages">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`message ${message.sender === "bot" ? "bot-message" : "user-message"
+                  }`}
+              >
+                <span className="message-sender">
+                  {message.sender === "bot" ? "Bot:" : "You:"}
+                </span>{" "}
+                {message.text}
+              </div>
+            ))}
+          </div>
+
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="Type your answer..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              className="message-input"
+            />
+            <button
+              onClick={handleSendMessage}
+              className="send-button"
+              disabled={showEvaluation}
+            >
+              Send
+            </button>
+          </div>
         </div>
       )}
     </div>
