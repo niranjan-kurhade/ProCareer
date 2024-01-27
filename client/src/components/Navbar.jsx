@@ -8,11 +8,13 @@ const Navbar = () => {
             <div className="logo">ProCareer</div>
             <ul className="nav-links">
                 <li><Link to="/">Home</Link></li>
-                <li><Link to="/resume-builder">Resume Builder</Link></li>
+                <li><Link to="/resume-builder/choose-template">Resume Builder</Link></li>
                 <li><Link to="/resume-score">Resume Score</Link></li>
                 <li><Link to="/prepare">Prepare</Link></li>
-                <li><a href="#">Login</a></li>
             </ul>
+            <div className="login-container">
+                <a href="#"className='login-button'>Login</a>
+            </div>
         </nav>
     );
 };
