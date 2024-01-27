@@ -8,6 +8,7 @@ import ChooseTemplate from './components/ChooseTemplate';
 import EditDetails from './pages/EditDetails';
 import ChatBot from './pages/ChatBot';
 import Feedback from './pages/Feedback';
+import Chatech from './pages/ChatBot-Tech';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path='/prepare' element={<Prepare />} />
         <Route path='/chat' element={<ChatBot />} />
         <Route path = '/feedback' element = {< Feedback />} />
+        <Route path = '/tech-chat' element = {< Chatech />} />
       </Routes>
     </div>
   )

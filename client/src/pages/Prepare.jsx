@@ -19,7 +19,7 @@ const Prepare = () => {
     try {
       const formData = new FormData();
       formData.append('image', selectedFile);
-
+      if(sectionId === 1){
       const response = await axios.post('http://localhost:3001/test', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -29,6 +29,17 @@ const Prepare = () => {
       const imageName = response.data.fileName;
       // Navigate to '/ChatBot' with the image name passed as a prop
       navigate('/chat', { state: { imageName } });
+      }
+      else if(sectionId === 3){
+        const response = await axios.post('http://localhost:3001/tech', formData, {
+          headers : {
+            'Content-Type' : 'multipart/form-date',
+          },
+        })
+        const imageName = response.data.fileName;
+        console.log(imageName);
+        navigate('/tech-chat', {state : {imageName}});
+      }
     } catch (error) {
       console.error(error);
     }
