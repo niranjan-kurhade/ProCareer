@@ -7,13 +7,15 @@ const fs = require('fs');
 const dotenv = require('dotenv')
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(process.env.GULGUL_API);
-const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" })
+
 
 const app = express();
 const PORT = 3001;
 dotenv.config()
+
+const genAI = new GoogleGenerativeAI(process.env.GULGUL_API);
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+const imagemodel = genAI.getGenerativeModel({ model: "gemini-pro-vision" })
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -485,6 +487,62 @@ app.post("/evaluate", async (req, res) => {
     console.log(e);
   }
 });
+
+
+app.post('/tech', upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    const fileName = req.file.originalname;
+
+    console.log("File uploaded:", fileName);
+
+    // Send back the file name in the response
+    res.status(200).json({ fileName });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post('/extract/tech', async (req, res) => {
+  try{
+    console.log("TECH Q STARTED");
+    const imageName = req.body.imageName;
+    const imagePath = path.join(__dirname, uploadDirectory, imageName);
+    console.log(imagePath);
+    var prompt = "Extract information from the resume.";
+    const image = {
+      inlineData: {
+        data: Buffer.from(fs.readFileSync(imagePath)).toString("base64"),
+        mimeType: "image/png",
+      },
+    };
+
+    const result = await imagemodel.generateContent([prompt, image]);
+    var resumeInfo = result.response.text();
+    
+    var prompt = `Based on resume ${resumeInfo} find out the Programming Skills, Tech Stacks and Generate 5 questions on the programming language and the tech stack Eg. Python, JavaScript, React, Java. Only Return the question in const techquestion array.`
+    const techq = await model.generateContent([prompt]);
+    const text = techq.response.text()
+    const regex = /const techQuestions = (\[.*?\]);/s;
+    const match = text.match(regex);
+    var question = []
+    if (match && match[1]) {
+      const extractedArray = eval(match[1]);
+      question = extractedArray;
+    } else {
+      console.log("Array extraction failed.");
+    }
+    res.status(200).json({ questions: question });
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
