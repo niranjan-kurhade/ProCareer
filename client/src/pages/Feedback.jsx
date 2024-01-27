@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-
+import Navbar from "../components/Navbar";
 
 function Feedback(){
     const location = useLocation();
@@ -8,6 +8,7 @@ function Feedback(){
     console.log(feedback);
     return(
         <div>
+            <Navbar />
             {feedback}
         </div>
     )

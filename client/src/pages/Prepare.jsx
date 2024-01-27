@@ -18,24 +18,6 @@ const Prepare = () => {
   const uploadFile = async (sectionId) => {
     try {
       const formData = new FormData();
-      formData.append('resume', selectedFile);
-
-      const response = await axios.post('http://localhost:3001/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const imageName = response.data.fileName;
-      navigate('/preview', { state: { imageName } });
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-  };
-
-  const test = async () => {
-    try {
-      const formData = new FormData();
       formData.append('image', selectedFile);
 
       const response = await axios.post('http://localhost:3001/test', formData, {
