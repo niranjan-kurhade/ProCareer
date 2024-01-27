@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Section from '../components/Section'; // Import Section component
 import styles from '../styles/Prepare.module.css'; // Import the CSS module file
+import Navbar from '../components/Navbar';
 
 const Prepare = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -33,6 +34,16 @@ const Prepare = () => {
   };
 
   return (
+    <div>
+      <Navbar />
+      <div className={styles['prepare-container']}>
+        <h2 className={styles['prepare-heading']}>Prepare For your Interviews</h2>
+        <div className={styles['file-input-container']}>
+          <input type="file" onChange={handleFileChange} className={styles['file-input']} />
+          <button onClick={test} disabled={!selectedFile} className={styles['upload-button']}>
+            Upload File
+          </button>
+        </div>
     <div className={styles['prepare-container']}>
       <h2 className={styles['prepare-heading']}>Prepare For Your Interviews</h2>
       <div className={styles['sections-container']}>
@@ -69,6 +80,8 @@ const Prepare = () => {
           isActive={activeSection === 4} // Check if this section is active
         />
       </div>
+    </div>
+    </div>
     </div>
   );
 };
