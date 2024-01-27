@@ -1,13 +1,29 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 import { ArrowDown } from "react-feather";
-
+import { useAuth0 } from "@auth0/auth0-react";
 import Editor from "../Editor/Editor";
 import Resume from "../Resume/Resume";
-
+import axios from 'axios'
 import styles from "./Body.module.css";
 
 function Body() {
+  const {user} = useAuth0();
+  const email = user.email
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await axios.post("http://localhost:3001/check", {
+                params: { mail: email }
+            });
+            console.log(response.data.message);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    fetchData(); // Call the asynchronous function
+  }, [email]);
   const colors = ["#239ce2", "#48bb78", "#0bc5ea", "#a0aec0", "#ed8936"];
   const sections = {
     basicInfo: "Basic Info",

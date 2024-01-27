@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import { X } from "react-feather";
 import InputControl from "../InputControl/InputControl";
 import styles from "./Editor.module.css";
+import axios from 'axios';
 
 function Editor(props) {
+  var element = document.getElementsByClassName('_container_ejeqj_1')
+  // if(element.length > 0){
+  //   element[0].textContent = 'Shreyas'
+  // }
   const sections = props.sections;
   const information = props.information;
 
@@ -352,6 +357,7 @@ function Editor(props) {
   };
 
   const handleSubmission = () => {
+    console.log(sections[activeSectionKey])
     switch (sections[activeSectionKey]) {
       case sections.basicInfo: {
         const tempDetail = {
@@ -362,7 +368,18 @@ function Editor(props) {
           email: values.email,
           phone: values.phone,
         };
-
+        console.log(tempDetail);
+        try{
+          axios.post('http://localhost:3001/add/basicInfo', {
+            params : tempDetail
+          })
+          .then((res) => {
+            console.log(res);
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         props.setInformation((prev) => ({
           ...prev,
           [sections.basicInfo]: {
@@ -385,7 +402,18 @@ function Editor(props) {
         };
         const tempDetails = [...information[sections.workExp]?.details];
         tempDetails[activeDetailIndex] = tempDetail;
-
+        console.log(tempDetail)
+        try{
+          axios.post('http://localhost:3001/add/workInfo', {
+            params : tempDetail
+          })
+          .then((res) => {
+            console.log(res);
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         props.setInformation((prev) => ({
           ...prev,
           [sections.workExp]: {
@@ -406,7 +434,18 @@ function Editor(props) {
         };
         const tempDetails = [...information[sections.project]?.details];
         tempDetails[activeDetailIndex] = tempDetail;
-
+        console.log(tempDetail)
+        try{
+          axios.post('http://localhost:3001/add/projectInfo', {
+            params : tempDetail
+          })
+          .then((res) => {
+            console.log(res)
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         props.setInformation((prev) => ({
           ...prev,
           [sections.project]: {
@@ -426,7 +465,18 @@ function Editor(props) {
         };
         const tempDetails = [...information[sections.education]?.details];
         tempDetails[activeDetailIndex] = tempDetail;
-
+        console.log(tempDetail)
+        try{
+          axios.post('http://localhost:3001/add/eduInfo', {
+            params : tempDetail
+          })
+          .then((res) => {
+            console.log(res);
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         props.setInformation((prev) => ({
           ...prev,
           [sections.education]: {
@@ -448,6 +498,18 @@ function Editor(props) {
             sectionTitle,
           },
         }));
+        console.log(tempPoints)
+        try{
+          axios.post('http://localhost:3001/add/achInfo', {
+            params : tempPoints
+          })
+          .then((res) => {
+            console.log(res)
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         break;
       }
       case sections.summary: {
@@ -461,6 +523,15 @@ function Editor(props) {
             sectionTitle,
           },
         }));
+        console.log(tempDetail)
+        try{
+          axios.post('http://localhost:3001/add/sumInfo', {
+            params : tempDetail
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         break;
       }
       case sections.other: {
@@ -474,6 +545,18 @@ function Editor(props) {
             sectionTitle,
           },
         }));
+        console.log(tempDetail)
+        try{
+          axios.post('http://localhost:3001/add/otherInfo', {
+            params : tempDetail
+          })
+          .then((res) => {
+            console.log(res);
+          })
+        }
+        catch(e){
+          console.log(e);
+        }
         break;
       }
     }
