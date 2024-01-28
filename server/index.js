@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const dotenv = require("dotenv");
+const mongoose = require('mongoose');
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const dotenv = require('dotenv')
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 
@@ -21,59 +21,71 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-mongoose
-  .connect(
-    process.env.MONGO_URI,
-    {}
-  )
-  .then(() => console.log("Connected to database"))
-  .catch((err) => {
-    console.log(err);
-  });
+example = {
+  "questions" : [
+    {
+      "question" : "",
+      "model_ans" : "",
+      "candidate_ans" : "",
+      "score" : "",
+      "feedback" : ""
+    }
+  ],
+  "overall_feedback" : "",
+  "overall_score" : "",
+}
+
+
+mongoose.connect(process.env.MONGO_URI, {
+}, ) 
+.then(() => console.log("Connected to database"))
+.catch((err) => {console.log(err)})
 
 const registerschema = new mongoose.Schema({
-  email: {
-    type: String,
-  },
-  registered: {
-    type: Boolean,
-  },
-});
+  email : {
+      type : String
+  } , 
+  registered : {
+      type : Boolean
+  }
+})
 
-module.exports = Register = mongoose.model("Register", registerschema);
+module.exports = Register = mongoose.model('Register', registerschema)
+
 
 const basicInfoSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: true
   },
   title: {
     type: String,
-    required: true,
+    required: true
   },
   linkedin: {
     type: String,
-    required: true,
+    required: true
   },
   github: {
     type: String,
-    required: true,
+    required: true
   },
   email: {
     type: String,
-    required: true,
+    required: true
   },
   phone: {
     type: String,
-    required: true,
-  },
+    required: true
+  }
 });
 
 // Create a model using the schema
-const BasicInfo = mongoose.model("BasicInfo", basicInfoSchema);
+const BasicInfo = mongoose.model('BasicInfo', basicInfoSchema);
 
 // Export the model
 module.exports = BasicInfo;
+
 
 const workSchema = new mongoose.Schema({
   certificationLink: {
@@ -106,7 +118,7 @@ const workSchema = new mongoose.Schema({
   },
 });
 
-const Certification = mongoose.model("Certification", workSchema);
+const Certification = mongoose.model('Certification', workSchema);
 
 module.exports = Certification;
 
@@ -133,7 +145,7 @@ const projectSchema = new mongoose.Schema({
   },
 });
 
-const Project = mongoose.model("Project", projectSchema);
+const Project = mongoose.model('Project', projectSchema);
 
 module.exports = Project;
 
@@ -156,9 +168,10 @@ const educationSchema = new mongoose.Schema({
   },
 });
 
-const Education = mongoose.model("Education", educationSchema);
+const Education = mongoose.model('Education', educationSchema);
 
 module.exports = Education;
+
 
 const achievementsSchema = new mongoose.Schema({
   points: {
@@ -167,32 +180,32 @@ const achievementsSchema = new mongoose.Schema({
   },
 });
 
-const Achievements = mongoose.model("Achievements", achievementsSchema);
+const Achievements = mongoose.model('Achievements', achievementsSchema);
 
 module.exports = Achievements;
 
-const uploadDirectory = "uploads";
+const uploadDirectory = 'uploads';
 
 const summarySchema = new mongoose.Schema({
-  summary: {
-    type: String,
-    required: true,
-  },
-});
+  summary : {
+    type : String,
+    required : true,
+  }
+})
 
-const Summary = mongoose.model("Summary", summarySchema);
+const Summary = mongoose.model('Summary', summarySchema);
 
-module.exports = Summary;
+module.exports = Summary
 
 const otherSchema = new mongoose.Schema({
-  other: {
-    type: String,
-    required: true,
-  },
-});
+  other : {
+    type : String, 
+    required : true,
+  }
+})
 
-const Other = mongoose.model("Other", otherSchema);
-module.exports = Other;
+const Other = mongoose.model('Other', otherSchema);
+module.exports = Other
 
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
@@ -209,7 +222,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/add/basicInfo", async (req, res) => {
+
+app.post('/add/basicInfo', async (req, res) => {
   try {
     const { name, title, linkedin, github, email, phone } = req.body.params;
 
@@ -227,22 +241,15 @@ app.post("/add/basicInfo", async (req, res) => {
     res.json({ success: true, data: savedBasicInfo });
   } catch (error) {
     console.error(error);
-    res.stat;
+    res.stat
   }
-});
+})
 
-app.post("/add/workInfo", async (req, res) => {
-  try {
-    console.log(req.body.params);
-    const {
-      certificationLink,
-      title,
-      startDate,
-      endDate,
-      companyName,
-      location,
-      points,
-    } = req.body.params;
+
+app.post('/add/workInfo', async (req, res) => {
+  try{
+    console.log(req.body.params)
+    const {certificationLink, title, startDate, endDate, companyName, location, points} = req.body.params;
     const newWorkInfo = new Certification({
       certificationLink,
       title,
@@ -250,105 +257,119 @@ app.post("/add/workInfo", async (req, res) => {
       endDate,
       companyName,
       location,
-      points,
+      points
     });
 
-    const savedWorkInfo = await newWorkInfo.save();
-    res.json({ success: true, data: savedWorkInfo });
-  } catch (e) {
+    const savedWorkInfo = await newWorkInfo.save()
+    res.json({success : true, data: savedWorkInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
+})
 
-app.post("/add/projectInfo", async (req, res) => {
-  try {
+
+app.post('/add/projectInfo', async (req, res) => {
+  try{
     console.log(req.body.params);
-    const { link, title, overview, github, points } = req.body.params;
+    const {link, title, overview, github, points} = req.body.params;
     const newProjectInfo = new Project({
       link,
       title,
       overview,
       github,
-      points,
+      points
     });
-    const savedProjectInfo = await newProjectInfo.save();
-    res.json({ success: true, data: savedProjectInfo });
-  } catch (e) {
+    const savedProjectInfo = await newProjectInfo.save()
+    res.json({success : true, data : savedProjectInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
+})
 
-app.post("/add/eduInfo", async (req, res) => {
-  try {
+app.post('/add/eduInfo', async (req, res) => {
+  try{
     console.log(req.body.params);
-    const { title, college, startDate, endDate } = req.body.params;
+    const {title, college, startDate, endDate } = req.body.params; 
     const newEduInfo = new Education({
       title,
       college,
       startDate,
-      endDate,
+      endDate
     });
     const savedEduInfo = await newEduInfo.save();
-    res.json({ success: true, data: savedEduInfo });
-  } catch (e) {
+    res.json({success : true, data : savedEduInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
+})
 
-app.post("/add/achInfo", async (req, res) => {
-  try {
+
+app.post('/add/achInfo', async (req, res) => {
+  try{
     console.log(req.body.params);
-    const { points } = req.body.params;
+    const {points} = req.body.params;
     const newAchInfo = new Achievements({
-      points,
+      points
     });
     const savedAchInfo = await newAchInfo.save();
-    res.json({ success: true, data: savedAchInfo });
-  } catch (e) {
+    res.json({success : true, data : savedAchInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
 
-app.post("/add/sumInfo", async (req, res) => {
-  try {
+})
+
+app.post('/add/sumInfo', async (req, res) => {
+  try{
     console.log(req.body.params);
-    const { sum } = req.body.params;
+    const {sum} = req.body.params;
     const newSumInfo = new Summary({
-      sum,
-    });
+      sum
+    })
     const savedSumInfo = await newSumInfo.save();
-    res.json({ success: true, data: savedSumInfo });
-  } catch (e) {
+    res.json({success : true, data : savedSumInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
+})
 
-app.post("/add/otherInfo", async (req, res) => {
-  try {
-    console.log(req.body.params);
-    const { other } = req.body.params;
+
+app.post('/add/otherInfo', async (req, res) => {
+  try{
+    console.log(req.body.params)
+    const {other} = req.body.params;
     const newOtherInfo = new Other({
-      other,
-    });
+      other
+    })
     const savedOtherInfo = await newOtherInfo.save();
-    res.json({ success: true, data: savedSumInfo });
-  } catch (e) {
+    res.json({success : true, data : savedSumInfo})
+  }
+  catch(e){
     console.log(e);
   }
-});
+})
 
-app.post("/check", (req, res) => {
+
+app.post('/check', (req, res) => {
   const email = req.body.params.email;
-  Register.findOne({ email: email }).then((data) => {
-    if (!data) {
+  Register.findOne({email : email})
+  .then((data) => {
+    if(!data){
       console.log("Does not Exist");
-    } else {
-      console.log("Exist");
     }
-  });
-});
+    else{
+      console.log('Exist');
+    }
+  })
+})
 
-app.post("/test", upload.single("image"), (req, res) => {
+
+app.post('/test', upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send("No file uploaded.");
@@ -385,7 +406,7 @@ app.post("/resumescore", upload.single("image"), async (req, res) => {
     const result = await imagemodel.generateContent([prompt, image]);
     var resumeInfo = result.response.text();
 
-    var prompt = `Evaluate the resume provided in PNG format for ${resumeInfo}. Identify and list the flaws from a first-person perspective, and assign a score out of 100. Please refrain from using bold text.`;
+    var prompt = `Evaluate the resume provided in PNG format for ${resumeInfo}. Identify and list the flaws from a first-person perspective, and assign a score out of 100. Please refrain from using bold text. Generate the feedback in JSON format like ${example} where it can be parsed easily and write strictly in English the flaw is present then its fix or what should be there and in the end a score.`
 
     const feedback = await model.generateContent([prompt]);
     var finalfeedback = feedback.response.text();
@@ -471,11 +492,11 @@ app.post("/evaluate", async (req, res) => {
     var modelans = modelAns.response.text();
 
     var stringans = answer.toString();
-    var prompt = `The questions are ${questions.toString()} the Model answer to it are ${modelans}, the answer given by the candidate is ${stringans}. Compare the model answer with the candidate answer and provide feedback for each question assign it a score out of 5. In the end give feedback as hire not hire.`;
+    var prompt = `The questions are ${questions.toString()} the Model answer to it are ${modelans}, the answer given by the candidate is ${stringans}. Compare the model answer with the candidate answer and provide feedback for each question assign it a score out of 5. In the end give feedback as hire not hire.Generate the feedback in JSON format Strictly follow this ${example} where it can be parsed easily and write strictly in English the flaw is present then its fix or what should be there and in the end a score.`
     var feedback = await model.generateContent([prompt]);
     var finalfeedback = feedback.response.text();
     console.log(finalfeedback);
-    console.log(modelans);
+    //console.log(modelans);
     res.status(200).json({ feedback: finalfeedback });
   } catch (e) {
     console.log(e);
