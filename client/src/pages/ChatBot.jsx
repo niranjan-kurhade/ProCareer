@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/ChatBot.css";
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
 
 function ChatBot() {
   const location = useLocation();
@@ -15,6 +18,7 @@ function ChatBot() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
+  const [progress, setProgress] = useState(0);
   console.log(userAnswers);
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +60,22 @@ function ChatBot() {
     }
   }, [loading, questions, currentQuestionIndex]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress === 100) {
+          return 0;
+        }
+        const diff = Math.random() * 10;
+        return Math.min(oldProgress + diff, 100);
+      });
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   const handleSendMessage = () => {
     if (inputMessage.trim() !== "") {
       const newMessages = [...messages, { text: inputMessage, sender: "user" }];
@@ -95,9 +115,11 @@ function ChatBot() {
     <div className="chatbot-container">
       <h1 className="chatbot-title">ChatBot</h1>
       {loading ? (
-        <div className="loading-animation">Loading...</div>
+        <div className="loading-animation"> Please wait while we get questions for you<CircularProgress /></div>
       ) : showEvaluation ? (
-        <p>Evaluating...</p>
+        <p className="eval-text"><Box sx={{ width: '100%', marginTop: '-20px' }}>
+          Please hang on we are Evaluating your answers <LinearProgress variant="determinate" value={progress} sx={{ marginTop: '10px' }} />
+        </Box></p>
       ) : (
         <div>
           <div className="chat-messages">

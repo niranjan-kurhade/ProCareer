@@ -1,6 +1,6 @@
 .chatbot-container {
   max-width: 90%;
-  height: 80vh;
+  height: 81vh;
   margin: 50px auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -9,6 +9,25 @@
   background-color: #f7f7f7;
   position: relative;
   overflow: hidden;
+}
+
+.chatbot-title {
+  margin-top: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eval-text {
+  font-size: large;
+}
+
+.loading-animation {
+  font-size: large;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2rem;
 }
 
 .chat-messages {
