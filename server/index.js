@@ -23,7 +23,7 @@ app.use(cors());
 
 mongoose
   .connect(
-    "mongodb+srv://dp:tmI39refciAwOe1g@cluster0.nqcjpsz.mongodb.net/?retryWrites=true&w=majority",
+    process.env.MONGO_URI,
     {}
   )
   .then(() => console.log("Connected to database"))
