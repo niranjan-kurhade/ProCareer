@@ -20,8 +20,8 @@ const App = () => {
         <Route path='/resume-score' element={<ResumeScore />} />
         <Route path='/prepare' element={<Prepare />} />
         <Route path='/chat' element={<ChatBot />} />
-        <Route path = '/feedback' element = {< Feedback />} />
-        <Route path = '/tech-chat' element = {< Chatech />} />
+        <Route path='/feedback' element={< Feedback />} />
+        <Route path='/tech-chat' element={< Chatech />} />
       </Routes>
     </div>
   )

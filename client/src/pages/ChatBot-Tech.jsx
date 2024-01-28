@@ -1,8 +1,13 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import '../styles/Chatbot.css'
-import axios from 'axios'
-function Chatech(){
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "../styles/ChatBot.css";
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
+
+function Chatech() {
   const location = useLocation();
   const imageName = location.state.imageName;
   const navigate = useNavigate();
@@ -13,7 +18,8 @@ function Chatech(){
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
-  console.log(userAnswers)
+  const [progress, setProgress] = useState(0);
+  console.log(userAnswers);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,8 +61,20 @@ function Chatech(){
   }, [loading, questions, currentQuestionIndex]);
 
   useEffect(() => {
-    console.log("showEvaluation:", showEvaluation);
-  }, [showEvaluation]);
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress === 100) {
+          return 0;
+        }
+        const diff = Math.random() * 10;
+        return Math.min(oldProgress + diff, 100);
+      });
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== "") {
@@ -76,14 +94,15 @@ function Chatech(){
       setShowEvaluation(true);
       try {
         axios.post("http://localhost:3001/evaluate", {
-          questions, userAnswers, imageName
+          questions,
+          userAnswers,
+          imageName,
         }).then((res) => {
-          //console.log(res.data.feedback)
-          let feedback = res.data.feedback
-          console.log(res.status)
+          let feedback = res.data.feedback;
+          console.log(res.status);
           if (res.status === 200) {
-            console.log("Idhar ara h")
-            navigate('/feedback', { state: { feedback } });
+            console.log("Redirecting...");
+            navigate("/feedback", { state: { feedback } });
           }
         });
       } catch (e) {
@@ -95,52 +114,45 @@ function Chatech(){
   return (
     <div className="chatbot-container">
       <h1 className="chatbot-title">ChatBot</h1>
-      <p className="image-name">Received Image Name: {imageName}</p>
-      {showEvaluation ? <p>Evaluating</p> : <p></p>}
-
-      <div className="chat-messages">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.sender === "bot" ? "bot-message" : "user-message"
-              }`}
-          >
-            <span className="message-sender">
-              {message.sender === "bot" ? "Bot:" : "You:"}
-            </span>{" "}
-            {message.text}
-          </div>
-        ))}
-      </div>
-
       {loading ? (
-        <p>Loading questions...</p>
-      ) : currentQuestionIndex < questions.length ? (
-        <div className="input-container">
-          <input
-            type="text"
-            placeholder="Type your answer..."
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            className="message-input"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="send-button"
-            disabled={showEvaluation}
-          >
-            Send
-          </button>
-        </div>
+        <div className="loading-animation"> Please wait while we get questions for you<CircularProgress /></div>
+      ) : showEvaluation ? (
+        <p className="eval-text"><Box sx={{ width: '100%', marginTop: '-20px' }}>
+          Please hang on we are Evaluating your answers <LinearProgress variant="determinate" value={progress} sx={{ marginTop: '10px' }} />
+        </Box></p>
       ) : (
         <div>
-          {showEvaluation && (
-            <div>
-              <p>Evaluation paragraph after 10 questions...</p>
-              <p>Additional content for evaluation...</p>
-            </div>
-          )}
-          {!showEvaluation && <p>No more questions</p>}
+          <div className="chat-messages">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`message ${message.sender === "bot" ? "bot-message" : "user-message"
+                  }`}
+              >
+                <span className="message-sender">
+                  {message.sender === "bot" ? "Bot:" : "You:"}
+                </span>{" "}
+                {message.text}
+              </div>
+            ))}
+          </div>
+
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="Type your answer..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              className="message-input"
+            />
+            <button
+              onClick={handleSendMessage}
+              className="send-button"
+              disabled={showEvaluation}
+            >
+              Send
+            </button>
+          </div>
         </div>
       )}
     </div>

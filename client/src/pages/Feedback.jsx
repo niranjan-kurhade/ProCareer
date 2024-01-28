@@ -16,7 +16,7 @@ function renderValue(value) {
     // If the value is an object, recursively render its properties
     if (typeof value === "object" && value !== null) {
         return (
-            <ul>
+            <ul className="list-disc list-inside">
                 {Object.entries(value).map(([nestedKey, nestedValue]) => (
                     <li key={nestedKey}>
                         <strong>{nestedKey}:</strong> {renderValue(nestedValue)}
@@ -45,10 +45,13 @@ function Feedback() {
     return (
         <div>
             <Navbar />
-            <div>
+            <div className="max-w-lg mx-auto mt-8">
                 {feedbackEntries.map(([key, value]) => (
-                    <div key={key}>
-                        <strong>{key}:</strong> {renderValue(value)}
+                    <div key={key} className="mb-4">
+                        <p className="font-bold">{key}:</p>
+                        <div className="ml-4">
+                            {renderValue(value)}
+                        </div>
                     </div>
                 ))}
             </div>
