@@ -1,5 +1,10 @@
 /* Feedback.css */
 
+.body{
+  color : blue;
+  background-color: red;
+}
+
 .feedback-container {
     max-width: 800px;
     margin: 20px auto;
