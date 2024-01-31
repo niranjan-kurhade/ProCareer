@@ -406,7 +406,7 @@ app.post("/resumescore", upload.single("image"), async (req, res) => {
     const result = await imagemodel.generateContent([prompt, image]);
     var resumeInfo = result.response.text();
 
-    var prompt = `Evaluate the resume provided in PNG format for ${resumeInfo}. Identify and list the flaws from a first-person perspective, and assign a score out of 100. Please refrain from using bold text. Generate the feedback in JSON format like ${example} where it can be parsed easily and write strictly in English the flaw is present then its fix or what should be there and in the end a score.`
+    var prompt = `Evaluate the resume ${resumeInfo} Find the flaws in it and write its fix ignore Iconsistend Font and Formatting after finding score give the result in format of JSON strictly follow this ${example} Do not change even the variable names. Give an overall score out oof 100 to the resume. Ignore the Inconsistency in font and formatting`
 
     const feedback = await model.generateContent([prompt]);
     var finalfeedback = feedback.response.text();
@@ -446,25 +446,38 @@ app.post("/extract", async (req, res) => {
         },
       ],
     });
-    const msg = `return the question in an const interviewQuestions array`;
-    var result1 = await chat.sendMessage(msg);
-    var x = await result1.response;
-    var text = x.text();
-    const regex = /const interviewQuestions = (\[.*?\]);/s;
-    const match = text.match(regex);
+
+    const maxRetries = 3; // Set your maximum retry count
     var question = [];
-    if (match && match[1]) {
-      const extractedArray = eval(match[1]);
-      question = extractedArray;
-    } else {
-      console.log("Array extraction failed.");
+
+    for (let retryCount = 0; retryCount < maxRetries; retryCount++) {
+      try {
+        const msg = `return the question in an const interviewQuestions array`;
+        var result1 = await chat.sendMessage(msg);
+        var x = await result1.response;
+        var text = x.text();
+        const regex = /const interviewQuestions = (\[.*?\]);/s;
+        const match = text.match(regex);
+
+        if (match && match[1]) {
+          const extractedArray = eval(match[1]);
+          question = extractedArray;
+          break; // Break out of the loop if extraction is successful
+        } else {
+          console.log("Array extraction failed. Retrying...");
+        }
+      } catch (error) {
+        console.error("Error during extraction:", error);
+      }
     }
+
     res.status(200).json({ questions: question });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 app.post("/evaluate", async (req, res) => {
   let questions = req.body.questions;
@@ -492,7 +505,7 @@ app.post("/evaluate", async (req, res) => {
     var modelans = modelAns.response.text();
 
     var stringans = answer.toString();
-    var prompt = `The questions are ${questions.toString()} the Model answer to it are ${modelans}, the answer given by the candidate is ${stringans}. Compare the model answer with the candidate answer and provide feedback for each question assign it a score out of 5. In the end give feedback as hire not hire.Generate the feedback in JSON format Strictly follow this ${example} where it can be parsed easily and write strictly in English the flaw is present then its fix or what should be there and in the end a score.`
+    var prompt = `The questions are ${questions.toString()} the Model answer to it are ${modelans}, the answer given by the candidate is ${stringans}. Compare the model answer with the candidate answer and provide feedback for each question assign it a score out of 5. In the end give feedback as hire not hire.Generate the feedback in JSON format Strictly follow this ${example} where it can be parsed easily and write strictly in English the flaw is present then its fix or what should be there and in the end a score.Return the JSON in such a way that JSON.parse() Works on it without an issue.`
     var feedback = await model.generateContent([prompt]);
     var finalfeedback = feedback.response.text();
     console.log(finalfeedback);
@@ -558,6 +571,20 @@ app.post('/extract/tech', async (req, res) => {
   }
 })
 
+
+app.post('/fix', async (req, res) => {
+  console.log('fixing')
+  let error_feedback = req.body.param.feedback;
+  var prompt = `Fix the ${error_feedback} such that JSON.parse() works on it`
+  const result = await model.generateContent([prompt])
+  //console.log(result.response.text())
+  const filteredFeedback = result.response.text()
+        .split("\n")
+        .filter((line) => !line.startsWith("```") && !line.endsWith("```"))
+        .join("\n");
+  console.log(JSON.parse(filteredFeedback))
+  return res.status(200).json({questions : filteredFeedback})
+})
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
